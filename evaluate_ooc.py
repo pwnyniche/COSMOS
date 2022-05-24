@@ -2,11 +2,12 @@
 
 import cv2
 import os
+from tqdm import tqdm
 from utils.config import *
 from utils.text_utils import get_text_metadata
 from model_archs.models import CombinedModelMaskRCNN
 from utils.common_utils import read_json_data
-from utils.eval_utils import is_bbox_overlap, top_bbox_from_scores
+from utils.eval_utils import bbox_overlap, top_bbox_from_scores
 
 
 # Word Embeddings
@@ -40,6 +41,7 @@ def get_scores(v_data):
     combined_model.eval()
 
     img_path = os.path.join(DATA_DIR, v_data["img_local_path"])
+
     bbox_list = v_data['maskrcnn_bboxes']
     bbox_classes = [-1] * len(bbox_list)
     img = cv2.imread(img_path)
@@ -97,7 +99,8 @@ def evaluate_context_with_bbox_overlap(v_data):
 
     top_bbox_c1 = top_bbox_from_scores(bboxes, score_c1)
     top_bbox_c2 = top_bbox_from_scores(bboxes, score_c2)
-    bbox_overlap = is_bbox_overlap(top_bbox_c1, top_bbox_c2, iou_overlap_threshold)
+    bbox_overlapz = bbox_overlap(top_bbox_c1, top_bbox_c2, iou_overlap_threshold)
+    return bbox_overlapz
     if bbox_overlap:
         # Check for captions with same context : Same grounding with high textual overlap (Not out of context)
         if textual_sim >= textual_sim_threshold:
@@ -114,20 +117,44 @@ def evaluate_context_with_bbox_overlap(v_data):
 if __name__ == "__main__":
     """ Main function to compute out-of-context detection accuracy"""
 
-    test_samples = read_json_data(os.path.join(DATA_DIR, 'annotations', 'test_data.json'))
+    # test_samples = read_json_data(os.path.join(DATA_DIR, 'cosmos_anns_acm','acm_anns', 'test_data.json'))
+    test_samples = read_json_data(os.path.join(DATA_DIR, 'test_data.json'))
     ours_correct = 0
     lang_correct = 0
+    tp=0
+    fp=0
+    tn=0
+    fn=0
+    pred_contexts=[]
 
-    for i, v_data in enumerate(test_samples):
+    for i, v_data in tqdm(enumerate(test_samples),total=len(test_samples)):
         actual_context = int(v_data['context_label'])
         language_context = 0 if float(v_data['bert_base_score']) >= textual_sim_threshold else 1
-        pred_context = evaluate_context_with_bbox_overlap(v_data)
+        iou = evaluate_context_with_bbox_overlap(v_data)
+        pred_contexts.append(iou)
+        # if pred_context == 1 and actual_context==0:
+        #     fp+=1
+        # if pred_context == 1 and actual_context==1:
+        #     tp+=1
+        # if pred_context == 0 and actual_context==0:
+        #     tn+=1
+        # if pred_context == 0 and actual_context==1:
+        #     fn+=1 
 
-        if pred_context == actual_context:
-            ours_correct += 1
+        # if pred_context == actual_context:
+        #     ours_correct += 1
 
         if language_context == actual_context:
             lang_correct += 1
-
-    print("Cosmos Accuracy", ours_correct / len(test_samples))
+    
+    textfile = open("pred_contexts.txt", "w")
+    for element in pred_contexts:
+        textfile.write(str(element) + "\n")
+    textfile.close()
+    print('done')
+    # print("Cosmos Accuracy", ours_correct / len(test_samples))
     print("Language Baseline Accuracy", lang_correct / len(test_samples))
+    # print(fp)
+    # print(tp)
+    # print(tn)
+    # print(fn)

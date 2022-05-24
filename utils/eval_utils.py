@@ -106,7 +106,7 @@ def get_match_vs_no_match_acc(z_img, z_text_match, z_text_diff):
     return correct
 
 
-def bb_intersection_over_union(boxA, boxB):
+def  bb_intersection_over_union(boxA, boxB):
     """
         Computes IoU (Intersection over Union for 2 given bounding boxes)
 
@@ -152,7 +152,7 @@ def top_bbox_from_scores(bboxes, scores):
     return matched_bbox
 
 
-def is_bbox_overlap(bbox1, bbox2, iou_overlap_threshold):
+def bbox_overlap(bbox1, bbox2, iou_overlap_threshold):
     """
         Checks if the two bounding boxes overlap based on certain threshold
 
@@ -165,6 +165,7 @@ def is_bbox_overlap(bbox1, bbox2, iou_overlap_threshold):
             Boolean whether two boxes overlap or not
     """
     iou = bb_intersection_over_union(boxA=bbox1, boxB=bbox2)
+    return iou
     if iou >= iou_overlap_threshold:
         return True
     return False

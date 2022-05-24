@@ -6,10 +6,13 @@ import tensorflow_hub as hub
 import torchvision.transforms as transforms
 
 # Data Directories
-BASE_DIR = '/home/shivangi/Desktop/Data/Projects/cosmos/'
-DATA_DIR = '/home/shivangi/Desktop/Data/Projects/cosmos/data/'
-TARGET_DIR = "/home/shivangi/Desktop/Data/Projects/cosmos/viz/"
-
+# BASE_DIR = '/home/shivangi/Desktop/Data/Projects/cosmos/'
+# DATA_DIR = '/home/shivangi/Desktop/Data/Projects/cosmos/data/'
+# TARGET_DIR = "/home/shivangi/Desktop/Data/Projects/cosmos/viz/"
+BASE_DIR = '/root/thesis/COSMOS/'
+# DATA_DIR = '/root/thesis/new_dataset/'
+DATA_DIR = 'data'
+TARGET_DIR = "/root/thesis/COSMOS/data/viz"
 # Word Embeddings
 embedding_length = 300
 embed_type = 'use'  # glove, fasttext, use
