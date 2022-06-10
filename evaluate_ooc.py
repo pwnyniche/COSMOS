@@ -117,8 +117,8 @@ def evaluate_context_with_bbox_overlap(v_data):
 if __name__ == "__main__":
     """ Main function to compute out-of-context detection accuracy"""
 
-    # test_samples = read_json_data(os.path.join(DATA_DIR, 'cosmos_anns_acm','acm_anns', 'test_data.json'))
-    test_samples = read_json_data(os.path.join(DATA_DIR, 'test_data.json'))
+    test_samples = read_json_data(os.path.join(DATA_DIR, 'cosmos_anns_acm','acm_anns', 'public_test_acm.json'))
+    # test_samples = read_json_data(os.path.join(DATA_DIR, 'test_data.json'))
     ours_correct = 0
     lang_correct = 0
     tp=0
@@ -147,7 +147,7 @@ if __name__ == "__main__":
         if language_context == actual_context:
             lang_correct += 1
     
-    textfile = open("pred_contexts.txt", "w")
+    textfile = open("pred_contexts_public.txt", "w")
     for element in pred_contexts:
         textfile.write(str(element) + "\n")
     textfile.close()
